@@ -1,1 +1,290 @@
-<hello world>
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>報名資料確認中</title>
+    <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <style>
+        body { font-family: "Microsoft JhengHei", sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; background-color: #f5f5f5; padding: 20px; box-sizing: border-box; }
+        .container { background: white; padding: 40px 30px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); text-align: center; max-width: 400px; width: 100%; }
+        h1 { color: #06c755; margin: 0 0 15px 0; font-size: 24px; }
+        p { color: #555; line-height: 1.6; margin: 0 0 20px 0; font-size: 15px; }
+        .btn { display: inline-block; width: 100%; padding: 15px 0; border-radius: 10px; text-decoration: none; border: none; font-size: 16px; cursor: pointer; font-weight: bold; transition: background 0.3s; margin-bottom: 10px; box-sizing: border-box; text-align: center; }
+        .btn-primary { background-color: #06c755; color: white; box-shadow: 0 4px 6px rgba(6, 199, 85, 0.2); }
+        .btn-primary:hover { background-color: #05a546; }
+        .btn-secondary { background-color: #f0f0f0; color: #555; border: 1px solid #ddd; }
+        .btn-secondary:hover { background-color: #e0e0e0; }
+        .loader { border: 4px solid #f3f3f3; border-top: 4px solid #06c755; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 20px auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .hidden { display: none; }
+        .note { font-size: 12px; color: #999; margin-top: 5px; margin-bottom: 15px; }
+        .highlight-box { background-color: #fff8e1; border-left: 4px solid #ffc107; padding: 12px 15px; border-radius: 6px; margin-bottom: 20px; text-align: left; }
+        .highlight-box p { margin: 0; font-size: 14px; color: #555; line-height: 1.5; }
+        .warning-box { background-color: #ffebee; border-left: 4px solid #ff4b4b; padding: 12px 15px; border-radius: 6px; margin-bottom: 20px; text-align: left; }
+        .warning-box p { margin: 0; font-size: 14px; color: #c62828; line-height: 1.6; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <!-- 載入中 -->
+    <div id="loading" class="container">
+        <div class="loader"></div>
+        <p style="font-size: 18px; font-weight: bold; margin-top: 15px;">正在為您確認報名資料...</p>
+        <p style="color: #ff4b4b; font-weight: bold; margin-top: 10px; line-height: 1.5;">
+            溫馨提醒：請勿關閉本網頁！<br>💡待會請點擊下方「使用LINE應用程式登入」
+        </p>
+    </div>
+
+    <!-- 情境 1：已是好友 -->
+    <div id="is-friend" class="container hidden">
+        <h1>🎉 報名成功！</h1>
+        <p>親愛的 <b id="name-friend"></b>，<br>報名資訊已確認，歡迎準時加入直播！</p>
+        <div class="warning-box">
+            <p>⚠️ 若加入官方 LINE 帳號後一分鐘，未收到專屬講座連結，請提供姓名、電話，將由專員傳送直播連結給您</p>
+        </div>
+        <a href="https://line.me/R/oaMessage/@704rcmqj/" class="btn btn-primary">
+            💬 打開 LINE 查看專屬講座連結
+        </a>
+    </div>
+
+    <!-- 情境 2：非好友 -->
+    <div id="not-friend" class="container hidden">
+        <h1>🎉 報名成功！</h1>
+        <p>親愛的 <b id="name-notfriend"></b>，<br>最後一步：加入 LINE 好友領取專屬直播連結！</p>
+        <div class="highlight-box">
+            <p>📱 <b>點擊下方按鈕後：</b><br>
+            1. 加入 LINE 好友<br>
+            2. 稍候幾秒，預約成功訊息會傳送到您的 LINE<br>
+            3. 直播當天會再次提醒</p>
+        </div>
+        <button id="add-friend-btn" class="btn btn-primary">
+            💬 立即加入 LINE 好友
+        </button>
+        <p class="note">加好友後請留在 LINE 等待預約成功訊息</p>
+    </div>
+
+    <!-- 情境 3：等待 webhook -->
+    <div id="webhook-pending" class="container hidden">
+        <div class="loader"></div>
+        <h1 style="font-size: 20px; margin-top: 15px;">訊息發送中...</h1>
+        <p>請切換到 LINE App 查看訊息<br>約 10 秒內會收到預約成功通知</p>
+        <p style="font-size: 13px; color: #06c755; font-weight: bold; margin-top: 10px;">
+            ✅ 您已成功報名講座
+        </p>
+    </div>
+
+    <!-- 情境 4：LIFF 失敗 fallback -->
+    <div id="failed" class="container hidden">
+        <h1>🎉 報名成功！</h1>
+        <p>親愛的 <b id="name-failed"></b>，<br>您的專屬直播連結已準備好！</p>
+        <p style="font-size: 13px; color: #ff4b4b; font-weight: bold; margin-top: 0; margin-bottom: 15px;">
+            請先點擊下方按鈕進入直播間，<br>直播中也可以掃碼加入我們的 LINE！
+        </p>
+        <a id="webinar-btn-failed" href="#" class="btn btn-primary">
+            👉 點擊進入講座直播間
+        </a>
+        <p class="note">（時間到了才能進入唷！）</p>
+        <a href="https://lin.ee/ZMowQJg" class="btn btn-secondary">
+            💬 加入官方 LINE 掌握最新消息
+        </a>
+    </div>
+
+    <script>
+        // ── 設定區 ──
+        const MyLiffId = '';
+        const MakeWebhookUrl = '';
+        const WebinarBaseUrl = 'https://webinar.archiestudio.co/webinar/thankyou//';
+        const AddFriendUrl = 'https://lin.ee/ZMowQJg';
+        const WebhookDelayMs = 8000;
+
+        function getParams() {
+            const urlParams = new URLSearchParams(window.location.search);
+            let t = urlParams.get('t') || '';
+            let r = urlParams.get('r') || '';
+            let firstName = urlParams.get('first_name') || '';
+            let email = urlParams.get('email') || '';
+            let phone = urlParams.get('phone_number') || '';
+
+            if (!r && !t) {
+                try {
+                    const liffState = urlParams.get('liff.state') || '';
+                    if (liffState) {
+                        let decoded = liffState;
+                        for (let i = 0; i < 3; i++) {
+                            try { decoded = decodeURIComponent(decoded); } catch(e) { break; }
+                            if (decoded.includes('r=') || decoded.includes('t=')) break;
+                        }
+                        const stateParams = new URLSearchParams(
+                            decoded.startsWith('?') ? decoded.slice(1) : decoded
+                        );
+                        t = stateParams.get('t') || '';
+                        r = stateParams.get('r') || '';
+                        firstName = stateParams.get('first_name') || '';
+                        email = stateParams.get('email') || '';
+                        phone = stateParams.get('phone_number') || '';
+                    }
+                } catch(e) {}
+            }
+
+            if (!r && !t) {
+                try {
+                    const stored = sessionStorage.getItem('webinar_params');
+                    if (stored) {
+                        const p = JSON.parse(stored);
+                        t = p.t || '';
+                        r = p.r || '';
+                        firstName = p.first_name || '';
+                        email = p.email || '';
+                        phone = p.phone_number || '';
+                    }
+                } catch(e) {}
+            }
+
+            return { t, r, firstName, email, phone };
+        }
+
+        function buildWebinarUrl(params) {
+            const p = new URLSearchParams();
+            if (params.t) p.set('t', params.t);
+            if (params.r) p.set('r', params.r);
+            if (params.firstName) p.set('first_name', params.firstName);
+            if (params.email) p.set('email', params.email);
+            if (params.phone) p.set('phone_number', params.phone);
+            return WebinarBaseUrl + '?' + p.toString();
+        }
+
+        async function triggerWebhook(payload, storageKey) {
+            if (storageKey && localStorage.getItem(storageKey)) {
+                console.log('Webhook already sent for this session, skipping.');
+                return true;
+            }
+
+            try {
+                const response = await fetch(MakeWebhookUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                    keepalive: true
+                });
+
+                if (response.ok && storageKey) {
+                    localStorage.setItem(storageKey, '1');
+                }
+                return response.ok;
+            } catch (err) {
+                console.error('Webhook failed:', err);
+                return false;
+            }
+        }
+
+        function showFailed(name, webinarUrl) {
+            document.getElementById('name-failed').textContent = name;
+            document.getElementById('webinar-btn-failed').href = webinarUrl;
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('failed').classList.remove('hidden');
+        }
+
+        async function main() {
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+                if (urlParams.has('r') || urlParams.has('t')) {
+                    sessionStorage.setItem('webinar_params', JSON.stringify({
+                        t: urlParams.get('t') || '',
+                        r: urlParams.get('r') || '',
+                        first_name: urlParams.get('first_name') || '',
+                        email: urlParams.get('email') || '',
+                        phone_number: urlParams.get('phone_number') || ''
+                    }));
+                }
+
+                const redirectCount = parseInt(sessionStorage.getItem('redirect_count') || '0');
+                if (redirectCount > 3) {
+                    sessionStorage.removeItem('redirect_count');
+                    const params = getParams();
+                    showFailed(params.firstName || '同學', buildWebinarUrl(params));
+                    return;
+                }
+
+                await liff.init({ liffId: MyLiffId });
+
+                const params = getParams();
+
+                if (!liff.isLoggedIn()) {
+                    sessionStorage.setItem('redirect_count', String(redirectCount + 1));
+
+                    const cleanParams = new URLSearchParams();
+                    if (params.t) cleanParams.set('t', params.t);
+                    if (params.r) cleanParams.set('r', params.r);
+                    if (params.firstName) cleanParams.set('first_name', params.firstName);
+                    if (params.email) cleanParams.set('email', params.email);
+                    if (params.phone) cleanParams.set('phone_number', params.phone);
+
+                    const cleanUrl = window.location.origin + window.location.pathname + '?' + cleanParams.toString();
+
+                    // ⏱ 停留 2 秒,讓使用者看清楚「待會請點擊使用 LINE 應用程式登入」的提示
+                    await new Promise(resolve => setTimeout(resolve, 2500));
+
+                    liff.login({ redirectUri: cleanUrl });
+                    return;
+                }
+
+                sessionStorage.removeItem('redirect_count');
+                const profile = await liff.getProfile();
+                const name = params.firstName || profile.displayName;
+
+                const payload = {
+                    line_id: profile.userId,
+                    display_name: profile.displayName,
+                    email: params.email,
+                    first_name: params.firstName,
+                    r: params.r
+                };
+                const storageKey = `webhook_sent_${params.r || profile.userId}`;
+
+                let isFriend = false;
+                try {
+                    const friendship = await liff.getFriendship();
+                    isFriend = friendship.friendFlag;
+                } catch(e) {
+                    console.error('Friendship check failed:', e);
+                    isFriend = false;
+                }
+
+                if (isFriend) {
+                    document.getElementById('name-friend').textContent = name;
+                    document.getElementById('is-friend').classList.remove('hidden');
+                    document.getElementById('loading').classList.add('hidden');
+                    triggerWebhook(payload, storageKey);
+                } else {
+                    document.getElementById('name-notfriend').textContent = name;
+                    document.getElementById('not-friend').classList.remove('hidden');
+                    document.getElementById('loading').classList.add('hidden');
+
+                    document.getElementById('add-friend-btn').addEventListener('click', function(e) {
+                        e.preventDefault();
+
+                        setTimeout(() => {
+                            triggerWebhook(payload, storageKey);
+                        }, WebhookDelayMs);
+
+                        document.getElementById('not-friend').classList.add('hidden');
+                        document.getElementById('webhook-pending').classList.remove('hidden');
+
+                        setTimeout(() => {
+                            window.location.href = AddFriendUrl;
+                        }, 100);
+                    });
+                }
+
+            } catch (err) {
+                console.error('Main flow error:', err);
+                const params = getParams();
+                showFailed(params.firstName || '同學', buildWebinarUrl(params));
+            }
+        }
+
+        main();
+    </script>
+</body>
+</html>
