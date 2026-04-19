@@ -30,9 +30,11 @@
     <!-- 載入中 -->
     <div id="loading" class="container">
         <div class="loader"></div>
-        <p style="font-size: 18px; font-weight: bold; margin-top: 15px;">正在為您確認報名資料...</p>
-        <p style="color: #ff4b4b; font-weight: bold; margin-top: 10px; line-height: 1.5;">
-            溫馨提醒：請勿關閉本網頁！<br>💡待會請點擊下方「使用LINE應用程式登入」
+        <p style="font-size: 22px; font-weight: bold; color: #ff4b4b; margin-top: 20px; line-height: 1.5;">
+            💡 待會請點擊下方<br>「使用LINE應用程式登入」
+        </p>
+        <p style="font-size: 14px; color: #333; font-weight: normal; margin-top: 20px; line-height: 1.5;">
+            📋 報名資料確認中,請勿關閉本網頁
         </p>
     </div>
 
@@ -41,7 +43,7 @@
         <h1>🎉 報名成功！</h1>
         <p>親愛的 <b id="name-friend"></b>，<br>報名資訊已確認，歡迎準時加入直播！</p>
         <div class="warning-box">
-            <p>⚠️ 若加入官方 LINE 帳號後一分鐘，未收到專屬講座連結，請提供姓名、電話，將由專員傳送直播連結給您</p>
+            <p>⚠️ 若加入官方 LINE 帳號後一分鐘未收到專屬講座連結，請提供姓名、電話，將由專員傳送直播連結給您</p>
         </div>
         <a href="https://line.me/R/oaMessage/@704rcmqj/" class="btn btn-primary">
             💬 打開 LINE 查看專屬講座連結
@@ -77,14 +79,10 @@
     <!-- 情境 4：LIFF 失敗 fallback -->
     <div id="failed" class="container hidden">
         <h1>🎉 報名成功！</h1>
-        <p>親愛的 <b id="name-failed"></b>，<br>您的專屬直播連結已準備好！</p>
-        <p style="font-size: 13px; color: #ff4b4b; font-weight: bold; margin-top: 0; margin-bottom: 15px;">
-            請先點擊下方按鈕進入直播間，<br>直播中也可以掃碼加入我們的 LINE！
-        </p>
+        <p>親愛的 <b id="name-failed"></b>，<br>感謝您報名講座，期待與您相見！</p>
         <a id="webinar-btn-failed" href="#" class="btn btn-primary">
-            👉 點擊進入講座直播間
+            👉 點擊獲取直播連結
         </a>
-        <p class="note">（時間到了才能進入唷！）</p>
         <a href="https://lin.ee/ZMowQJg" class="btn btn-secondary">
             💬 加入官方 LINE 掌握最新消息
         </a>
@@ -92,9 +90,9 @@
 
     <script>
         // ── 設定區 ──
-        const MyLiffId = '2009771736-ny3hhIdv';
-        const MakeWebhookUrl = 'https://hook.us2.make.com/yqqnrtma2o1gndvx8w75ek2617mcvbvi';
-        const WebinarBaseUrl = 'https://webinar.archiestudio.co/webinar/thankyou/69dd03914bbdde408778504c/';
+        const MyLiffId = '2009771736-hbNEloBb';
+        const MakeWebhookUrl = 'https://hook.us2.make.com/my7wlg6ystnykr63gn7nimqgoizhetbo';
+        const WebinarBaseUrl = 'https://webinar.archiestudio.co/webinar/thankyou/696f0867a8416e192c4c1c7e/';
         const AddFriendUrl = 'https://lin.ee/ZMowQJg';
         const WebhookDelayMs = 8000;
 
@@ -223,7 +221,7 @@
                     const cleanUrl = window.location.origin + window.location.pathname + '?' + cleanParams.toString();
 
                     // ⏱ 停留 2 秒,讓使用者看清楚「待會請點擊使用 LINE 應用程式登入」的提示
-                    await new Promise(resolve => setTimeout(resolve, 2500));
+                    await new Promise(resolve => setTimeout(resolve, 2000));
 
                     liff.login({ redirectUri: cleanUrl });
                     return;
