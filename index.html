@@ -23,6 +23,22 @@
         .highlight-box p { margin: 0; font-size: 14px; color: #555; line-height: 1.5; }
         .warning-box { background-color: #ffebee; border-left: 4px solid #ff4b4b; padding: 12px 15px; border-radius: 6px; margin-bottom: 20px; text-align: left; }
         .warning-box p { margin: 0; font-size: 14px; color: #c62828; line-height: 1.6; font-weight: bold; }
+        .big-icon { font-size: 48px; margin-bottom: 10px; line-height: 1; }
+        .redirect-title { color: #06c755; font-size: 22px; font-weight: bold; margin: 15px 0 10px; }
+        .ended-title { color: #555; font-size: 22px; font-weight: bold; margin: 15px 0 10px; }
+
+        /* 非好友畫面 — 新樣式 */
+        .main-heading { color: #06c755; font-size: 22px; font-weight: bold; margin: 0 0 8px; line-height: 1.4; }
+        .sub-heading { color: #555; font-size: 15px; font-weight: bold; margin: 0 0 6px; }
+        .greeting { color: #888; font-size: 14px; margin: 0 0 24px; }
+        .benefit-list { text-align: left; margin: 0 auto 24px; padding: 0; list-style: none; }
+        .benefit-item { display: flex; align-items: flex-start; padding: 12px 4px; border-bottom: 1px solid #f0f0f0; }
+        .benefit-item:last-child { border-bottom: none; }
+        .benefit-icon { font-size: 22px; margin-right: 14px; flex-shrink: 0; line-height: 1.3; }
+        .benefit-text { flex: 1; text-align: left; }
+        .benefit-title { font-size: 15px; font-weight: bold; color: #333; margin: 0 0 2px; line-height: 1.4; }
+        .benefit-desc { font-size: 13px; color: #888; margin: 0; line-height: 1.5; }
+        .trust-note { font-size: 12px; color: #999; margin: 10px 0 0; line-height: 1.5; }
     </style>
 </head>
 <body>
@@ -30,20 +46,18 @@
     <!-- 載入中 -->
     <div id="loading" class="container">
         <div class="loader"></div>
-        <p style="font-size: 22px; font-weight: bold; color: #ff4b4b; margin-top: 20px; line-height: 1.5;">
-            💡 待會請點擊下方<br>「使用LINE應用程式登入」
-        </p>
-        <p style="font-size: 14px; color: #333; font-weight: normal; margin-top: 20px; line-height: 1.5;">
-            📋 報名資料確認中,請勿關閉本網頁
+        <p style="font-size: 18px; font-weight: bold; margin-top: 15px;">正在為您確認報名資料...</p>
+        <p style="color: #ff4b4b; font-weight: bold; margin-top: 10px; line-height: 1.5;">
+            溫馨提醒：請勿關閉本網頁！<br>💡待會請點擊下方「使用LINE應用程式登入」
         </p>
     </div>
 
     <!-- 情境 1：已是好友 -->
     <div id="is-friend" class="container hidden">
         <h1>🎉 報名成功！</h1>
-        <p>親愛的 <b id="name-friend"></b>，<br>報名資訊已確認，歡迎準時加入直播！</p>
+        <p>親愛的 <b id="name-friend"></b>，<br>報名資訊已確認,歡迎準時加入直播！</p>
         <div class="warning-box">
-            <p>⚠️ 若加入官方 LINE 帳號後一分鐘未收到專屬講座連結，請提供姓名、電話，將由專員傳送直播連結給您</p>
+            <p>⚠️ 若加入官方 LINE 帳號後一分鐘，未收到專屬講座連結,請提供姓名、電話,將由專員傳送直播連結給您</p>
         </div>
         <a href="https://line.me/R/oaMessage/@704rcmqj/" class="btn btn-primary">
             💬 打開 LINE 查看專屬講座連結
@@ -52,18 +66,38 @@
 
     <!-- 情境 2：非好友 -->
     <div id="not-friend" class="container hidden">
-        <h1>🎉 報名成功！</h1>
-        <p>親愛的 <b id="name-notfriend"></b>，<br>最後一步：加入 LINE 好友領取專屬直播連結！</p>
-        <div class="highlight-box">
-            <p>📱 <b>點擊下方按鈕後：</b><br>
-            1. 加入 LINE 好友<br>
-            2. 稍候幾秒，預約成功訊息會傳送到您的 LINE<br>
-            3. 直播當天會再次提醒</p>
-        </div>
+        <h1 class="main-heading">直播連結將傳送至你的 LINE</h1>
+        <p class="sub-heading">加入 LINE 才算完成報名</p>
+        <p class="greeting">親愛的 <b id="name-notfriend"></b>，加入後你會收到：</p>
+
+        <ul class="benefit-list">
+            <li class="benefit-item">
+                <div class="benefit-icon">📩</div>
+                <div class="benefit-text">
+                    <p class="benefit-title">專屬直播連結</p>
+                    <p class="benefit-desc">不用再回來找這個頁面</p>
+                </div>
+            </li>
+            <li class="benefit-item">
+                <div class="benefit-icon">⏰</div>
+                <div class="benefit-text">
+                    <p class="benefit-title">講座開始前提醒</p>
+                    <p class="benefit-desc">避免錯過開播時間</p>
+                </div>
+            </li>
+            <li class="benefit-item">
+                <div class="benefit-icon">🎁</div>
+                <div class="benefit-text">
+                    <p class="benefit-title">講座結束更快領取好禮</p>
+                    <p class="benefit-desc">第一時間收到課後資源</p>
+                </div>
+            </li>
+        </ul>
+
         <button id="add-friend-btn" class="btn btn-primary">
-            💬 立即加入 LINE 好友
+            加入 LINE 領取直播連結 →
         </button>
-        <p class="note">加好友後請留在 LINE 等待預約成功訊息</p>
+        <p class="trust-note">🔒 已有上千位同學透過 LINE 收到專屬連結，並準時上線</p>
     </div>
 
     <!-- 情境 3：等待 webhook -->
@@ -79,22 +113,53 @@
     <!-- 情境 4：LIFF 失敗 fallback -->
     <div id="failed" class="container hidden">
         <h1>🎉 報名成功！</h1>
-        <p>親愛的 <b id="name-failed"></b>，<br>感謝您報名講座，期待與您相見！</p>
+        <p>親愛的 <b id="name-failed"></b>，<br>您的專屬直播連結已準備好！</p>
+        <p style="font-size: 13px; color: #ff4b4b; font-weight: bold; margin-top: 0; margin-bottom: 15px;">
+            請先點擊下方按鈕進入直播間，<br>直播中也可以掃碼加入我們的 LINE！
+        </p>
         <a id="webinar-btn-failed" href="#" class="btn btn-primary">
-            👉 點擊獲取直播連結
+            👉 點擊進入講座直播間
         </a>
-        <a href="https://lin.ee/ZMowQJg" class="btn btn-secondary">
+        <p class="note">（時間到了才能進入唷！）</p>
+        <a href="https://line.me/R/ti/p/%40704rcmqj" class="btn btn-secondary">
             💬 加入官方 LINE 掌握最新消息
         </a>
     </div>
-        <script>
-        // — 設定區 —
+
+    <!-- 情境 5：講座即將開始 / 進行中,直接跳轉直播間 -->
+    <div id="redirecting" class="container hidden">
+        <div class="big-icon">🎬</div>
+        <p class="redirect-title">講座即將開始</p>
+        <p>正為您連入直播間......</p>
+        <div class="loader"></div>
+    </div>
+
+    <!-- 情境 6：講座已結束 -->
+    <div id="ended" class="container hidden">
+        <div class="big-icon">📅</div>
+        <p class="ended-title">講座已結束</p>
+        <p>此場次已經結束，<br>請您預約其他場次</p>
+        <a href="https://webinar.archiestudio.co/webinar/registration/69dd03914bbdde408778504c" class="btn btn-primary">
+            🔄 查看其他場次
+        </a>
+    </div>
+
+    <script>
+        // ── 設定區(學測國文版) ──
         const MyLiffId = '2009771736-ny3hhIdv';
         const MakeWebhookUrl = 'https://hook.us2.make.com/yqqnrtma2o1gndvx8w75ek2617mcvbvi';
         const WebinarBaseUrl = 'https://webinar.archiestudio.co/webinar/thankyou/69dd03914bbdde408778504c/';
-        const AddFriendUrl = 'https://lin.ee/ZMowQJg';
+        const AddFriendUrl = 'https://line.me/R/ti/p/%40704rcmqj';
+        const RegistrationUrl = 'https://webinar.archiestudio.co/webinar/registration/69dd03914bbdde408778504c';
         const WebhookDelayMs = 8000;
-        
+
+        // ── 講座時間設定 ──
+        // 講座開始時間自動從 URL 的 t 參數取得(毫秒 Unix timestamp)
+        // 換講座時通常只需要調整這兩個值
+        const WebinarDurationMinutes = 68;  // 講座時長(分鐘)
+        const EarlyEnterMinutes = 3;         // 開始前幾分鐘內允許直接進入
+        const RedirectDelayMs = 2000;        // 跳轉直播間前的提示停留時間(毫秒)
+
         function getParams() {
             const urlParams = new URLSearchParams(window.location.search);
             let t = urlParams.get('t') || '';
@@ -151,6 +216,25 @@
             return WebinarBaseUrl + '?' + p.toString();
         }
 
+        // ── 判斷目前時間相對於講座時間的狀態 ──
+        function checkWebinarTime(tParam) {
+            if (!tParam) return 'unknown';
+
+            const startTime = parseInt(tParam, 10);
+            if (isNaN(startTime) || startTime <= 0) return 'unknown';
+
+            const now = Date.now();
+            const earlyEnterMs = EarlyEnterMinutes * 60 * 1000;
+            const durationMs = WebinarDurationMinutes * 60 * 1000;
+
+            const enterWindowStart = startTime - earlyEnterMs;
+            const enterWindowEnd = startTime + durationMs;
+
+            if (now < enterWindowStart) return 'before';
+            if (now >= enterWindowStart && now <= enterWindowEnd) return 'during';
+            return 'ended';
+        }
+
         async function triggerWebhook(payload, storageKey) {
             if (storageKey && localStorage.getItem(storageKey)) {
                 console.log('Webhook already sent for this session, skipping.');
@@ -182,6 +266,19 @@
             document.getElementById('failed').classList.remove('hidden');
         }
 
+        function showRedirectingAndGo(webinarUrl) {
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('redirecting').classList.remove('hidden');
+            setTimeout(() => {
+                window.location.href = webinarUrl;
+            }, RedirectDelayMs);
+        }
+
+        function showEnded() {
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('ended').classList.remove('hidden');
+        }
+
         async function main() {
             try {
                 const urlParams = new URLSearchParams(window.location.search);
@@ -193,6 +290,19 @@
                         email: urlParams.get('email') || '',
                         phone_number: urlParams.get('phone_number') || ''
                     }));
+                }
+
+                const earlyParams = getParams();
+                const timeStatus = checkWebinarTime(earlyParams.t);
+
+                if (timeStatus === 'during') {
+                    showRedirectingAndGo(buildWebinarUrl(earlyParams));
+                    return;
+                }
+
+                if (timeStatus === 'ended') {
+                    showEnded();
+                    return;
                 }
 
                 const redirectCount = parseInt(sessionStorage.getItem('redirect_count') || '0');
@@ -219,14 +329,25 @@
 
                     const cleanUrl = window.location.origin + window.location.pathname + '?' + cleanParams.toString();
 
-                    // ⏱ 停留 2 秒,讓使用者看清楚「待會請點擊使用 LINE 應用程式登入」的提示
-                    await new Promise(resolve => setTimeout(resolve, 2000));
+                    // ⏱ 停留 2.5 秒,讓使用者看清楚「待會請點擊使用 LINE 應用程式登入」的提示
+                    await new Promise(resolve => setTimeout(resolve, 2500));
 
                     liff.login({ redirectUri: cleanUrl });
                     return;
                 }
 
                 sessionStorage.removeItem('redirect_count');
+
+                const postLoginStatus = checkWebinarTime(params.t);
+                if (postLoginStatus === 'during') {
+                    showRedirectingAndGo(buildWebinarUrl(params));
+                    return;
+                }
+                if (postLoginStatus === 'ended') {
+                    showEnded();
+                    return;
+                }
+
                 const profile = await liff.getProfile();
                 const name = params.firstName || profile.displayName;
 
