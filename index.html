@@ -321,14 +321,14 @@
                     }));
                 }
 
-                // ── Meta Pixel: 只在「真正第一次到達」時觸發 Lead ──
-                // 從 WebinarKit 跳過來時,URL 會帶 email 或 first_name;
-                // LIFF 登入回跳只會有 liff.state,不會重複觸發
-                const isFirstArrival = !sessionStorage.getItem('pixel_lead_fired')
-                                    && (urlParams.has('email') || urlParams.has('first_name'));
+                // ── Meta Pixel: 首次到達此頁即視為「完成註冊」 ──
+                // 使用 r 參數判斷是否從 WebinarKit 首次跳來(LIFF 回跳只有 liff.state),
+                // 並用 sessionStorage flag 防止同 session 內重複觸發
+                const isFirstArrival = !sessionStorage.getItem('pixel_registration_fired')
+                                    && urlParams.has('r');
                 if (isFirstArrival) {
-                    trackPixelEvent('Lead');
-                    sessionStorage.setItem('pixel_lead_fired', '1');
+                    trackPixelEvent('CompleteRegistration');
+                    sessionStorage.setItem('pixel_registration_fired', '1');
                 }
 
                 const earlyParams = getParams();
@@ -413,9 +413,6 @@
                     document.getElementById('is-friend').classList.remove('hidden');
                     document.getElementById('loading').classList.add('hidden');
                     triggerWebhook(payload, storageKey);
-
-                    // ── Meta Pixel: 已是好友 = 完整轉換 ──
-                    trackPixelEvent('CompleteRegistration');
                 } else {
                     document.getElementById('name-notfriend').textContent = name;
                     document.getElementById('not-friend').classList.remove('hidden');
@@ -423,9 +420,6 @@
 
                     document.getElementById('add-friend-btn').addEventListener('click', function(e) {
                         e.preventDefault();
-
-                        // ── Meta Pixel: 點下加 LINE 按鈕 = 完整轉換 ──
-                        trackPixelEvent('CompleteRegistration');
 
                         setTimeout(() => {
                             triggerWebhook(payload, storageKey);
