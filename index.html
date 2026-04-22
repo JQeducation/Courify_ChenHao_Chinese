@@ -4,6 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>報名資料確認中</title>
+
+    <!-- ===== Meta Pixel Code ===== -->
+    <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '1509082567565391');
+    fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=1509082567565391&ev=PageView&noscript=1"/></noscript>
+    <!-- ===== End Meta Pixel Code ===== -->
+
     <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <style>
         body { font-family: "Microsoft JhengHei", sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; background-color: #f5f5f5; padding: 20px; box-sizing: border-box; }
@@ -160,6 +178,17 @@
         const EarlyEnterMinutes = 3;         // 開始前幾分鐘內允許直接進入
         const RedirectDelayMs = 2000;        // 跳轉直播間前的提示停留時間(毫秒)
 
+        // ── Meta Pixel helper:安全呼叫 fbq ──
+        function trackPixelEvent(eventName) {
+            try {
+                if (typeof fbq === 'function') {
+                    fbq('track', eventName);
+                }
+            } catch (e) {
+                console.warn('Pixel track failed:', e);
+            }
+        }
+
         function getParams() {
             const urlParams = new URLSearchParams(window.location.search);
             let t = urlParams.get('t') || '';
@@ -292,6 +321,16 @@
                     }));
                 }
 
+                // ── Meta Pixel: 只在「真正第一次到達」時觸發 Lead ──
+                // 從 WebinarKit 跳過來時,URL 會帶 email 或 first_name;
+                // LIFF 登入回跳只會有 liff.state,不會重複觸發
+                const isFirstArrival = !sessionStorage.getItem('pixel_lead_fired')
+                                    && (urlParams.has('email') || urlParams.has('first_name'));
+                if (isFirstArrival) {
+                    trackPixelEvent('Lead');
+                    sessionStorage.setItem('pixel_lead_fired', '1');
+                }
+
                 const earlyParams = getParams();
                 const timeStatus = checkWebinarTime(earlyParams.t);
 
@@ -374,6 +413,9 @@
                     document.getElementById('is-friend').classList.remove('hidden');
                     document.getElementById('loading').classList.add('hidden');
                     triggerWebhook(payload, storageKey);
+
+                    // ── Meta Pixel: 已是好友 = 完整轉換 ──
+                    trackPixelEvent('CompleteRegistration');
                 } else {
                     document.getElementById('name-notfriend').textContent = name;
                     document.getElementById('not-friend').classList.remove('hidden');
@@ -381,6 +423,9 @@
 
                     document.getElementById('add-friend-btn').addEventListener('click', function(e) {
                         e.preventDefault();
+
+                        // ── Meta Pixel: 點下加 LINE 按鈕 = 完整轉換 ──
+                        trackPixelEvent('CompleteRegistration');
 
                         setTimeout(() => {
                             triggerWebhook(payload, storageKey);
