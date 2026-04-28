@@ -433,10 +433,14 @@
                 // ║ - 副按鈕:直接導向 thankyou page             ║
                 // ╚════════════════════════════════════════════╝
 
-                // 檢查 LIFF 是否已登入(從加好友頁回來的情況)
-                if (liff.isLoggedIn()) {
-                    // 已登入,代表使用者剛從 LINE login 回來
-                    // 此時應該完成 Step2 webhook 並跳加好友頁
+                // 檢查是否「剛從 LIFF login 跳回來」
+                // 區分依據:點主按鈕時會 set 'liff_login_initiated' flag
+                // 只有真的剛 login 完才應該觸發 Step2 並跳加好友
+                const justLoggedIn = sessionStorage.getItem('liff_login_initiated') === '1';
+
+                if (liff.isLoggedIn() && justLoggedIn) {
+                    // 真的剛從 LINE login 回來
+                    sessionStorage.removeItem('liff_login_initiated');
                     sessionStorage.removeItem('redirect_count');
 
                     try {
@@ -468,7 +472,8 @@
                     return;
                 }
 
-                // 未登入 LIFF → 顯示情境 A 兩按鈕畫面
+                // 其他所有情況(包含已登入但非剛 login,或未登入)
+                // → 顯示情境 A 兩按鈕畫面
                 const name = params.firstName || '同學';
                 document.getElementById('name-external').textContent = name;
                 hideAll();
@@ -477,6 +482,9 @@
                 // 主按鈕:加入 LINE → LIFF login → 觸發 Step2 → 跳加好友
                 document.getElementById('add-friend-btn').addEventListener('click', function(e) {
                     e.preventDefault();
+
+                    // 設置 flag,讓登入跳回來時知道這是「剛 login 完成」
+                    sessionStorage.setItem('liff_login_initiated', '1');
 
                     // 顯示過場畫面
                     hideAll();
